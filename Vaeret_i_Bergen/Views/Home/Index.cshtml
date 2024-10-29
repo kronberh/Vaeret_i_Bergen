@@ -4,8 +4,8 @@
     ViewBag.DarkMode = Model.Weather?.IsDay == 0;
 }
 
-<div class="text-center">
-    <h1>Været i Bergen</h1>
+<div>
+    <h1 class="text-center">Været i Bergen</h1>
     <div class="text-center">
         <button onclick="location.reload()" class="btn btn-outline-@((Model.Weather?.IsDay == 0) ? "light" : "dark")">Refresh</button>
     </div>
@@ -17,7 +17,7 @@
     {
         <div class="d-flex justify-content-center gap-5 align-items-center m-auto">
             <img src="@(Model.WeatherImage?.ImageUrl ?? "/img/question-mark-circle.png")" alt="WeatherImage" class="weather-img" />
-            <div class="text-start">
+            <div>
                 <p class="h4"><strong>Weather type: </strong>@(Model.WeatherImage?.Description ?? "Unrecognized") (code @Model.Weather.WeatherCode)</p>
                 <p class="h4"><strong>Temperature: </strong>@Model.Weather.Temperature°C</p>
                 <p class="h4"><strong>Daytime: </strong>
@@ -55,7 +55,7 @@
             ctx.arc(canvas.width * 0.5, thermometerTopY, thermometerWidth / 2, 0, Math.PI * 2, true);
             ctx.fill();
             let y = mapTemperatureToY(temp);
-            ctx.fillStyle = "@((Model.Weather?.Temperature > 0) ? "red" : "cornflowerblue")";
+            ctx.fillStyle = (temp > 0) ? "red" : "cornflowerblue";
             ctx.fillRect(thermometerX, y, thermometerWidth, canvas.height * 0.9 - y);
             ctx.beginPath();
             ctx.arc(canvas.width * 0.5, canvas.height * 0.9, bulbRadius, 0, Math.PI * 2, true);
