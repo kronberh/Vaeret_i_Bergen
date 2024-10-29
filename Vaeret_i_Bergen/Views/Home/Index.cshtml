@@ -53,14 +53,14 @@
                 ctx.arc(canvas.width * 0.5, thermometerTopY, thermometerWidth / 2, 0, Math.PI * 2, true);
                 ctx.fill();
                 let y = mapTemperatureToY(temp);
-                ctx.fillStyle = (temp > 0) ? "red" : "cornflowerblue";
+                ctx.fillStyle = (temp > 0) ? 'red' : 'cornflowerblue';
                 ctx.fillRect(thermometerX, y, thermometerWidth, canvas.height * 0.9 - y);
                 ctx.beginPath();
                 ctx.arc(canvas.width * 0.5, canvas.height * 0.9, bulbRadius, 0, Math.PI * 2, true);
                 ctx.fill();
                 ctx.font = `${canvas.width * 0.08}px Arial`;
                 ctx.textAlign = 'left';
-                ctx.fillStyle = 'black';
+                ctx.fillStyle = '@((Model.Weather.IsDay == 0) ? "white" : "black")';
                 for (let i = minTemp; i <= maxTemp; i += 10) {
                     y = mapTemperatureToY(i);
                     ctx.beginPath();
