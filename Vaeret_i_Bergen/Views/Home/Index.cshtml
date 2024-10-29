@@ -1,0 +1,81 @@
+﻿@using System.Text.Json
+@model PageModel
+@{
+    ViewBag.DarkMode = Model.Weather?.IsDay == 0;
+}
+
+<div class="text-center">
+    <h1>Været i Bergen</h1>
+    <div class="text-center">
+        <button onclick="location.reload()" class="btn btn-outline-@((Model.Weather?.IsDay == 0) ? "light" : "dark")">Refresh</button>
+    </div>
+    @if (Model.Weather == null)
+    {
+        <p class="text-danger">An error occured trying to fetch weather details.</p>
+    }
+    else
+    {
+        <div class="d-flex justify-content-center gap-5 align-items-center m-auto">
+            <img src="@(Model.WeatherImage?.ImageUrl ?? "/img/question-mark-circle.png")" alt="WeatherImage" class="weather-img" />
+            <div class="text-start">
+                <p class="h4"><strong>Weather type: </strong>@(Model.WeatherImage?.Description ?? "Unrecognized") (code @Model.Weather.WeatherCode)</p>
+                <p class="h4"><strong>Temperature: </strong>@Model.Weather.Temperature°C</p>
+                <p class="h4"><strong>Daytime: </strong>
+                    @(Model.Weather.IsDay switch {
+                        0 => "Night",
+                        _ => "Day"
+                    })
+                </p>
+            </div>
+            <canvas id="thermometer-canvas" width="200" height="500"></canvas>
+        </div>
+    }
+</div>
+@section Scripts {
+    <script>
+        const canvas = document.getElementById('thermometer-canvas');
+        const ctx = canvas.getContext('2d');
+        const minY = canvas.height * 0.9;
+        const maxY = canvas.height * 0.1;
+        const minTemp = -40;
+        const maxTemp = 50;
+
+        function drawThermometer(temp) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const thermometerX = canvas.width * 0.425;
+            const thermometerWidth = canvas.width * 0.15;
+            const thermometerTopY = canvas.height * 0.1;
+            const thermometerBottomY = canvas.height * 0.9;
+            const bulbRadius = canvas.width * 0.2;
+            ctx.fillStyle = 'gray';
+            ctx.fillRect(thermometerX, thermometerTopY, thermometerWidth, thermometerBottomY - thermometerTopY);
+            ctx.beginPath();
+            ctx.arc(canvas.width * 0.5, thermometerBottomY, bulbRadius, 0, Math.PI * 2, true);
+            ctx.fill();
+            ctx.arc(canvas.width * 0.5, thermometerTopY, thermometerWidth / 2, 0, Math.PI * 2, true);
+            ctx.fill();
+            let y = mapTemperatureToY(temp);
+            ctx.fillStyle = "@((Model.Weather?.Temperature > 0) ? "red" : "cornflowerblue")";
+            ctx.fillRect(thermometerX, y, thermometerWidth, canvas.height * 0.9 - y);
+            ctx.beginPath();
+            ctx.arc(canvas.width * 0.5, canvas.height * 0.9, bulbRadius, 0, Math.PI * 2, true);
+            ctx.fill();
+            ctx.font = `${canvas.width * 0.08}px Arial`;
+            ctx.textAlign = 'left';
+            ctx.fillStyle = 'black';
+            for (let i = minTemp; i <= maxTemp; i += 10) {
+                y = mapTemperatureToY(i);
+                ctx.beginPath();
+                ctx.moveTo(canvas.width * 0.6, y);
+                ctx.lineTo(canvas.width * 0.65, y);
+                ctx.fillText(i + '°C', canvas.width * 0.675, y + canvas.width * 0.02);
+            }
+        }
+
+        function mapTemperatureToY(temp) {
+            return minY - ((temp - minTemp) / (maxTemp - minTemp)) * (minY - maxY);
+        }
+
+        drawThermometer(@Model.Weather?.Temperature ?? 0);
+    </script>
+}
