@@ -12,8 +12,8 @@ namespace Vaeret_i_Bergen
 			// Add services to the container.
 			builder.Services.AddControllersWithViews();
 
-			builder.Services.AddScoped<IWeatherService, BergenWeatherService>();
-			builder.Services.AddScoped<IImagesService, WeatherImagesService>();
+			builder.Services.AddSingleton<IWeatherService, BergenWeatherService>();
+			builder.Services.AddSingleton<IImagesService, WeatherImagesService>();
 
 			var app = builder.Build();
 
